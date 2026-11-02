@@ -1,0 +1,69 @@
+site_name: ImmunoMath
+site_description: "Metrognome — rigorous, reproducible evaluation of probabilistic genetic inference. Keeping probabilistic genetics honest."
+site_url: https://github.com/societyforimmunepolymorphism/immunomath
+repo_url: https://github.com/societyforimmunepolymorphism/immunomath
+repo_name: societyforimmunepolymorphism/immunomath
+copyright: "Copyright &copy; Society for Immune Polymorphism (SIP). Licensed under Apache-2.0."
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - Mathematical Foundations:
+      - Probability Distributions: mathematical-foundations/probability-distributions.md
+      - Logarithmic Score: mathematical-foundations/logarithmic-score.md
+      - Brier Score: mathematical-foundations/brier-score.md
+      - Proper Scoring vs. Descriptive Metrics: mathematical-foundations/proper-vs-descriptive.md
+  - Tutorials:
+      - "1. Evaluating a Single Distribution": tutorials/01-single-distribution.md
+  - API Reference:
+      - Distributions: api/distributions.md
+      - Scoring: api/scoring.md
+      - Diagnostics: api/diagnostics.md
