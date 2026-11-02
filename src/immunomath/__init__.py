@@ -29,6 +29,7 @@ from .catastrophic import (
     catastrophic_error_report,
 )
 from .cohort import Cohort, CohortSummary
+from .comparison import PairedComparison, compare_cohorts
 from .diagnostics import (
     RankOfTruth,
     effective_number_of_outcomes,
@@ -60,7 +61,7 @@ from .statistics import (
     trimmed_mean,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability)
     "__version__",
@@ -83,6 +84,9 @@ __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability
     # Cohort container and summary
     "Cohort",
     "CohortSummary",
+    # Comparative assessment (paired)
+    "compare_cohorts",
+    "PairedComparison",
     # Resampling & distributional statistics
     "bootstrap_ci",
     "paired_bootstrap_ci",

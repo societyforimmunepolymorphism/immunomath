@@ -4,6 +4,48 @@ All notable changes to ImmunoMath are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — Milestone 3: comparative assessment
+
+### Added
+
+- **`compare_cohorts`** and **`PairedComparison`** (`immunomath.comparison`) —
+  paired comparison of two cohorts (algorithm A vs B, reference panel A vs B,
+  software versions) on the **same subjects**, with two co-equal headline
+  summaries:
+  - the **mean paired log-loss difference** (`d = L_A - L_B`, negative favors A)
+    with a raw **paired bootstrap confidence interval** (no multiplicity
+    correction), and
+  - the **proportion improved vs worsened vs tied**, with counts and
+    proportions.
+- Per-subject diagnostics: `subject_differences`, `largest_improvement` /
+  `largest_worsening` (or `None` when none), and a descriptive
+  `concordance_diff_top1` (top-1 accuracy contrast).
+- **Subject-overlap policy**: `on="exact"` (default) requires identical
+  subject-id sets and raises on any mismatch; `on="intersection"` restricts to
+  common subjects. A subject with differing truths across arms raises.
+- **Strict common-outcome-space enforcement**: comparisons over different
+  outcome spaces (e.g. different genotype resolutions) are **refused** unless a
+  reconciling `projection` is supplied, which is applied to both cohorts and
+  their truths (mass-preserving).
+- **Explicit infinite/undefined handling** in paired differences: one-sided
+  infinite losses are retained as decisive `±inf` differences; indeterminate
+  `inf − inf` pairs and subjects undefined in either arm are excluded with
+  recorded reasons and counted in `n_both_undefined_or_infinite`.
+- **Documentation**: a comparative-assessment mathematical-foundations page and
+  two executable tutorials — Tutorial 3 (comparing two algorithms) and Tutorial
+  4 (population-specific vs global panel, including a projection-based
+  resolution change) — plus a new API reference page and navigation entries.
+- **Tests**: paired-difference correctness and sign convention, both headlines,
+  overlap policy and `intersection` opt-in, truth-mismatch errors, strict
+  outcome-space enforcement and projection reconciliation, infinite/undefined
+  handling, bootstrap determinism, and property-based antisymmetry and
+  self-comparison invariants.
+
+### Changed
+
+- `__version__` and the packaged version bumped to `0.3.0`; the public API now
+  exports `compare_cohorts` and `PairedComparison`.
+
 ## [0.2.0] — Milestone 2: cohort assessment
 
 ### Added
