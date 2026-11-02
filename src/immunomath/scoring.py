@@ -24,15 +24,20 @@ from __future__ import annotations
 import math
 from collections.abc import Hashable, Iterable, Sequence
 from dataclasses import dataclass
+from enum import StrEnum
 
 from .distributions import Distribution
 
 __all__ = [
+    "CohortAccounting",
     "CohortScore",
+    "ScoreClass",
+    "SubjectScore",
     "brier_score",
     "mean_brier_score",
     "mean_negative_log_score",
     "negative_log_score",
+    "score_cohort_accounting",
 ]
 
 
@@ -315,3 +320,232 @@ def mean_brier_score(
 def _as_sequence(x: Iterable[Hashable]) -> Sequence[Hashable]:
     """Return ``x`` as a concrete sequence (helper for defensive copying)."""
     return list(x)
+
+
+# ---------------------------------------------------------------------- #
+# Undefined-subject accounting (Milestone 2, Decision 3)
+# ---------------------------------------------------------------------- #
+class ScoreClass(StrEnum):
+    """Classification of a single subject's identifiability under scoring.
+
+    The three cases are mutually exclusive and jointly exhaustive:
+
+    * ``FINITE`` -- the truth has an *identifiable, strictly positive*
+      probability, so the logarithmic score is a finite real number.
+    * ``INFINITE`` -- the truth has an *identifiable zero* probability
+      (explicitly listed with probability 0, or unlisted in a *complete*
+      distribution), so the logarithmic score is ``+inf``. This is a genuine,
+      identifiable outcome, not a defect: the forecaster ruled out the truth.
+    * ``UNDEFINED`` -- the truth's probability is *not identifiable*, e.g. it is
+      unlisted in an *open* distribution carrying residual mass. No score exists;
+      the subject cannot enter the mean and is accounted for separately.
+    """
+
+    FINITE = "finite"
+    INFINITE = "infinite"
+    UNDEFINED = "undefined"
+
+
+@dataclass(frozen=True)
+class SubjectScore:
+    """Per-subject scoring outcome with its identifiability classification.
+
+    Parameters
+    ----------
+    index : int
+        The subject's position in the input cohort.
+    score_class : ScoreClass
+        Whether the subject's score is finite, infinite, or undefined.
+    score : float or None
+        The negative log score in nats: a finite float for ``FINITE``,
+        ``math.inf`` for ``INFINITE``, and ``None`` for ``UNDEFINED``.
+    reason : str or None
+        For ``UNDEFINED`` subjects, why the probability is not identifiable.
+    """
+
+    index: int
+    score_class: ScoreClass
+    score: float | None
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
+class CohortAccounting:
+    """Cohort accounting distinguishing finite, infinite, and undefined subjects.
+
+    Never silently drops infinite losses or undefined subjects: both are counted
+    with explicit denominators, and undefined subjects carry reasons.
+
+    Parameters
+    ----------
+    subjects : tuple of SubjectScore
+        Per-subject outcomes, in input order.
+    n_total, n_scored, n_undefined, n_infinite : int
+        Counts. ``n_scored`` (finite + infinite, the *identifiable* subjects) is
+        the denominator of :attr:`primary_mean`.
+    primary_mean : float
+        Mean negative log score over the identifiable subjects; ``+inf`` if any
+        identifiable subject has an infinite loss; ``nan`` only when
+        ``n_scored == 0`` (reported explicitly, never hidden).
+    """
+
+    subjects: tuple[SubjectScore, ...]
+    n_total: int
+    n_scored: int
+    n_undefined: int
+    n_infinite: int
+    primary_mean: float
+
+    @property
+    def n_finite(self) -> int:
+        """Number of identifiable subjects with a finite loss."""
+        return self.n_scored - self.n_infinite
+
+    @property
+    def undefined_reasons(self) -> tuple[tuple[int, str], ...]:
+        """``(index, reason)`` pairs for every undefined subject, in order."""
+        return tuple(
+            (s.index, s.reason or "unidentifiable")
+            for s in self.subjects
+            if s.score_class is ScoreClass.UNDEFINED
+        )
+
+    @property
+    def mean_label(self) -> str:
+        """Human-readable label describing what ``primary_mean`` applies to."""
+        if self.n_undefined == 0:
+            return f"mean over all {self.n_scored} identifiable subjects"
+        return (
+            f"mean over {self.n_scored} identifiable subjects "
+            f"({self.n_undefined} of {self.n_total} undefined and excluded)"
+        )
+
+
+def score_cohort_accounting(
+    truths: Sequence[Hashable],
+    distributions: Sequence[Distribution],
+    *,
+    floor: float | None = None,
+    strict: bool = False,
+) -> CohortAccounting:
+    r"""Score a cohort with explicit finite / infinite / undefined accounting.
+
+    Each subject is classified (see :class:`ScoreClass`): identifiable with
+    positive probability -> ``FINITE``; identifiable with zero probability ->
+    ``INFINITE`` (log score ``+inf``); not identifiable -> ``UNDEFINED``
+    (recorded with a reason, excluded from the mean).
+
+    The **primary mean is a proper score** over the identifiable subjects
+    (finite + infinite); a single identifiable zero makes it ``+inf`` and is
+    never silently discarded (contrast the *descriptive* trimmed mean, which must
+    never replace it).
+
+    Parameters
+    ----------
+    truths : sequence of Hashable
+        Observed true outcomes, one per subject.
+    distributions : sequence of Distribution
+        Predicted distributions, aligned with ``truths``.
+    floor : float, optional
+        Optional probability floor in ``(0, 1]`` applied to finite lookups; see
+        :func:`negative_log_score`.
+    strict : bool, optional
+        If ``True``, raise :class:`ValueError` when any subject is undefined.
+
+    Returns
+    -------
+    CohortAccounting
+        Per-subject classifications and cohort-level counts and mean.
+
+    Raises
+    ------
+    ValueError
+        If lengths differ, the cohort is empty, ``floor`` is out of range, or
+        ``strict`` is set and any subject is undefined.
+
+    Examples
+    --------
+    >>> from immunomath import Distribution, Residual
+    >>> from immunomath.scoring import score_cohort_accounting
+    >>> complete = Distribution({"G1": 0.5, "G2": 0.5})
+    >>> open_d = Distribution({"G1": 0.5, Residual(0.5): None})
+    >>> acc = score_cohort_accounting(["G1", "G99"], [complete, open_d])
+    >>> acc.n_total, acc.n_scored, acc.n_undefined, acc.n_infinite
+    (2, 1, 1, 0)
+    >>> round(acc.primary_mean, 6)
+    0.693147
+    >>> acc.undefined_reasons[0][0]
+    1
+    """
+    if floor is not None and not (0.0 < floor <= 1.0):
+        raise ValueError(f"floor must lie in (0, 1], got {floor!r}.")
+    if len(truths) != len(distributions):
+        raise ValueError(
+            f"truths and distributions must have equal length; got "
+            f"{len(truths)} and {len(distributions)}."
+        )
+    if len(truths) == 0:
+        raise ValueError("Cannot score an empty cohort.")
+
+    subjects: list[SubjectScore] = []
+    for i, (truth, dist) in enumerate(zip(truths, distributions, strict=True)):
+        try:
+            p = dist.probability(truth)
+        except KeyError:
+            subjects.append(
+                SubjectScore(
+                    index=i,
+                    score_class=ScoreClass.UNDEFINED,
+                    score=None,
+                    reason=_undefined_reason(truth, dist),
+                )
+            )
+            continue
+        if floor is not None:
+            p = max(p, floor)
+        if p <= 0.0:
+            subjects.append(SubjectScore(index=i, score_class=ScoreClass.INFINITE, score=math.inf))
+        else:
+            subjects.append(
+                SubjectScore(index=i, score_class=ScoreClass.FINITE, score=-math.log(p) + 0.0)
+            )
+
+    n_total = len(subjects)
+    n_undefined = sum(1 for s in subjects if s.score_class is ScoreClass.UNDEFINED)
+    n_infinite = sum(1 for s in subjects if s.score_class is ScoreClass.INFINITE)
+    n_scored = n_total - n_undefined
+
+    if strict and n_undefined > 0:
+        bad = [s.index for s in subjects if s.score_class is ScoreClass.UNDEFINED]
+        raise ValueError(
+            f"strict mode: cohort contains {n_undefined} undefined subject(s) "
+            f"(indices {bad}). Their truth probabilities are not identifiable; "
+            "refusing to produce a cohort score."
+        )
+
+    if n_scored == 0:
+        primary_mean = math.nan
+    elif n_infinite > 0:
+        primary_mean = math.inf
+    else:
+        finite_scores = [
+            s.score for s in subjects if s.score_class is ScoreClass.FINITE and s.score is not None
+        ]
+        primary_mean = math.fsum(finite_scores) / n_scored
+
+    return CohortAccounting(
+        subjects=tuple(subjects),
+        n_total=n_total,
+        n_scored=n_scored,
+        n_undefined=n_undefined,
+        n_infinite=n_infinite,
+        primary_mean=primary_mean,
+    )
+
+
+def _undefined_reason(truth: Hashable, distribution: Distribution) -> str:
+    """Build a human-readable reason for an undefined (unidentifiable) subject."""
+    return (
+        f"truth {truth!r} is not listed in an open distribution carrying residual "
+        f"mass {distribution.residual_mass!r}; its probability is not identifiable"
+    )

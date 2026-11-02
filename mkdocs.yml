@@ -61,9 +61,17 @@ nav:
       - Logarithmic Score: mathematical-foundations/logarithmic-score.md
       - Brier Score: mathematical-foundations/brier-score.md
       - Proper Scoring vs. Descriptive Metrics: mathematical-foundations/proper-vs-descriptive.md
+      - Cohort Assessment: mathematical-foundations/cohort-assessment.md
+      - Uncertainty (Bootstrap): mathematical-foundations/uncertainty.md
+      - Loss-Distribution Quantiles: mathematical-foundations/quantiles.md
+      - Catastrophic-Error Analysis: mathematical-foundations/catastrophic-error.md
   - Tutorials:
       - "1. Evaluating a Single Distribution": tutorials/01-single-distribution.md
+      - "2. Evaluating 1,000 Individuals": tutorials/02-cohort.md
   - API Reference:
       - Distributions: api/distributions.md
       - Scoring: api/scoring.md
       - Diagnostics: api/diagnostics.md
+      - Cohort: api/cohort.md
+      - Statistics: api/statistics.md
+      - Catastrophic Errors: api/catastrophic.md

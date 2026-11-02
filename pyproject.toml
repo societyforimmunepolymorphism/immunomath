@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "immunomath"
-version = "0.1.0"
+version = "0.2.0"
 description = "Metrognome: rigorous, reproducible evaluation of probabilistic genetic inference. Keeping probabilistic genetics honest."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -99,6 +99,13 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 no_implicit_optional = true
 files = ["src/immunomath"]
+
+[[tool.mypy.overrides]]
+# SciPy does not ship type stubs for scipy.stats (used only for the BCa
+# bootstrap's normal quantiles). Allow the untyped import without relaxing
+# strictness anywhere else in the package.
+module = ["scipy.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"
