@@ -26,6 +26,7 @@ from __future__ import annotations
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass
+from statistics import NormalDist
 from typing import Literal
 
 import numpy as np
@@ -296,7 +297,7 @@ def _bca_quantiles(
     Falls back to percentile levels when infinities make the bias-correction
     undefined.
     """
-    from scipy.stats import norm
+    norm = NormalDist()
 
     finite_stats = stats[np.isfinite(stats)]
     if finite_stats.size == 0 or not math.isfinite(point):
@@ -304,7 +305,7 @@ def _bca_quantiles(
 
     prop_less = float((finite_stats < point).mean())
     prop_less = min(max(prop_less, 1e-6), 1 - 1e-6)
-    z0 = norm.ppf(prop_less)
+    z0 = norm.inv_cdf(prop_less)
 
     finite_data = data[np.isfinite(data)]
     nj = finite_data.size
@@ -317,8 +318,8 @@ def _bca_quantiles(
     denom = 6.0 * (float(np.sum(diff**2)) ** 1.5)
     a_hat = 0.0 if denom == 0.0 else float(np.sum(diff**3)) / denom
 
-    z_alpha_lo = norm.ppf(alpha / 2.0)
-    z_alpha_hi = norm.ppf(1.0 - alpha / 2.0)
+    z_alpha_lo = norm.inv_cdf(alpha / 2.0)
+    z_alpha_hi = norm.inv_cdf(1.0 - alpha / 2.0)
 
     def adjust(z: float) -> float:
         num = z0 + z

@@ -44,7 +44,21 @@ im.top_k_accuracy("G1", prediction, k=1)  # 1.0
 ImmunoMath **never silently normalizes** an invalid distribution: a prediction
 that does not sum to one (within tolerance) is rejected at construction.
 
-## This release — Milestone 1: the mathematical kernel
+## Calibration and reports (Milestone 4)
+
+```python
+from immunomath import analyze_cohort
+from immunomath.reporting import write_json, render_report
+
+result = analyze_cohort(cohort, label="engine X", seed=1)  # needs a Cohort
+write_json(result, "analysis.json")  # lossless record
+render_report(result.to_dict(), "report.html")  # pip install 'immunomath[reporting]'
+```
+
+Top-label and event calibration (ECE/MCE, Wilson intervals), risk-coverage with
+abstention, and a self-contained Plotly HTML report rebuilt from the saved JSON.
+
+## Milestone 1: the mathematical kernel
 
 - `Distribution`: validated finite discrete distributions, with an explicit
   three-way distinction between omitted outcomes, explicit zeros, and unknown
