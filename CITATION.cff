@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use ImmunoMath in academic work, please cite it as below."
+title: "ImmunoMath: evaluation of probabilistic genetic inference"
+abstract: >-
+  ImmunoMath (framework name: Metrognome) is an open-source Python library for
+  evaluating probabilistic genetic inference using proper scoring rules,
+  calibration diagnostics, and cohort statistics. It is an evaluation library,
+  not an inference library.
+type: software
+authors:
+  - name: "Society for Immune Polymorphism (SIP)"
+license: Apache-2.0
+version: 0.1.0
+repository-code: "https://github.com/societyforimmunepolymorphism/immunomath"
+url: "https://github.com/societyforimmunepolymorphism/immunomath"
+keywords:
+  - probabilistic forecasting
+  - proper scoring rules
+  - calibration
+  - HLA
+  - genotype imputation
+  - evaluation
