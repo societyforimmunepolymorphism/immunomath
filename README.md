@@ -26,8 +26,11 @@ particular imputation algorithm. Biological adapters are a separate layer.
 ## Installation
 
 ```bash
-pip install immunomath            # requires Python 3.12+
+uv add immunomath                 # in a uv project
+pip install immunomath            # or pip, inside a virtual environment (Python 3.12+)
 ```
+
+Optional extras: `immunomath[reporting]` adds Plotly (HTML reports) and PyArrow (Parquet).
 
 ## Quick start
 
@@ -79,8 +82,15 @@ reporting, and HLA integration.
 Build the docs locally:
 
 ```bash
-pip install -e ".[docs]"
-mkdocs serve
+uv run --extra docs mkdocs serve
+```
+
+`uv` creates and manages the virtual environment for you. Without uv, create one
+first (a bare `pip install` is refused by system and Homebrew Pythons):
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[docs]" && mkdocs serve
 ```
 
 See the mathematical-foundations pages for formal definitions, worked examples,
@@ -89,12 +99,14 @@ proper-scoring-rule theory, and failure modes.
 ## Development
 
 ```bash
-pip install -e ".[dev,docs]"
-ruff check .
-mypy
-pytest --doctest-modules src/immunomath tests
-mkdocs build --strict
+uv sync --extra dev --extra docs          # creates .venv from uv.lock
+uv run ruff check .
+uv run mypy
+uv run pytest --doctest-modules src/immunomath tests
+uv run mkdocs build --strict
 ```
+
+Or with plain pip: `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev,docs]"`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 

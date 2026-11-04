@@ -5,14 +5,19 @@
 ImmunoMath requires Python 3.12 or newer.
 
 ```bash
-pip install immunomath
+uv add immunomath            # in a uv project
+pip install immunomath       # or pip, inside a virtual environment
 ```
 
-For development (tests, linting, type checking) and documentation:
+For development (tests, linting, type checking) and documentation, from a clone
+of the repository:
 
 ```bash
-pip install -e ".[dev,docs]"
+uv sync --extra dev --extra docs
 ```
+
+Without uv, create a virtual environment first and use pip:
+`python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev,docs]"`.
 
 ## A first evaluation
 
