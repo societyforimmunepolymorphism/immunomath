@@ -39,9 +39,11 @@ distribution.
 Now score the prediction against a known truth:
 
 ```python
->>> im.negative_log_score("G1", prediction)   # natural log, in nats
-0.22314355131420976
->>> im.brier_score("G1", prediction)           # multiclass sum form, range [0, 2]
+>>> import immunomath as im
+>>> prediction = im.Distribution({"G1": 0.80, "G2": 0.15, "G3": 0.05})
+>>> round(im.negative_log_score("G1", prediction), 6)   # natural log, in nats
+0.223144
+>>> round(im.brier_score("G1", prediction), 10)         # sum form, range [0, 2]
 0.065
 >>> im.top_k_accuracy("G1", prediction, k=1)   # fractional-credit ties
 1.0

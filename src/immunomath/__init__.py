@@ -22,6 +22,15 @@ quantiles, and catastrophic-error diagnostics).
 
 from __future__ import annotations
 
+from ._version import __version__
+from .analysis import AnalysisResult, analyze_cohort
+from .calibration import (
+    DEFAULT_N_BINS,
+    CalibrationBin,
+    CalibrationResult,
+    event_calibration,
+    top_label_calibration,
+)
 from .catastrophic import (
     DEFAULT_PROBABILITY_THRESHOLDS,
     CatastrophicReport,
@@ -41,6 +50,7 @@ from .diagnostics import (
 )
 from .distributions import RESIDUAL, Distribution, Projection, Residual
 from .quantiles import QuantileMethod, loss_quantile, loss_quantiles
+from .risk_coverage import RiskCoveragePoint, RiskCoverageResult, risk_coverage
 from .scoring import (
     CohortAccounting,
     CohortScore,
@@ -60,8 +70,6 @@ from .statistics import (
     paired_bootstrap_ci,
     trimmed_mean,
 )
-
-__version__ = "0.3.0"
 
 __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability)
     "__version__",
@@ -84,6 +92,17 @@ __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability
     # Cohort container and summary
     "Cohort",
     "CohortSummary",
+    # Calibration, risk-coverage and analysis record
+    "top_label_calibration",
+    "event_calibration",
+    "CalibrationResult",
+    "CalibrationBin",
+    "DEFAULT_N_BINS",
+    "risk_coverage",
+    "RiskCoverageResult",
+    "RiskCoveragePoint",
+    "analyze_cohort",
+    "AnalysisResult",
     # Comparative assessment (paired)
     "compare_cohorts",
     "PairedComparison",

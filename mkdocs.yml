@@ -66,11 +66,19 @@ nav:
       - Loss-Distribution Quantiles: mathematical-foundations/quantiles.md
       - Catastrophic-Error Analysis: mathematical-foundations/catastrophic-error.md
       - Comparative Assessment: mathematical-foundations/comparative-assessment.md
+      - Calibration: mathematical-foundations/calibration.md
+      - Risk-Coverage and Abstention: mathematical-foundations/risk-coverage.md
+  - User Guide:
+      - Reports and Output: user-guide/reporting.md
   - Tutorials:
       - "1. Evaluating a Single Distribution": tutorials/01-single-distribution.md
       - "2. Evaluating 1,000 Individuals": tutorials/02-cohort.md
       - "3. Comparing Two Algorithms": tutorials/03-compare-algorithms.md
       - "4. Population vs Global Panel": tutorials/04-compare-panels.md
+      - "6. Constructing a Calibration Diagram": tutorials/06-calibration.md
+      - "7. Evaluating Allele-Presence Probabilities": tutorials/07-event-calibration.md
+  - Development:
+      - Reproducibility: development/reproducibility.md
   - API Reference:
       - Distributions: api/distributions.md
       - Scoring: api/scoring.md
@@ -79,3 +87,5 @@ nav:
       - Statistics: api/statistics.md
       - Catastrophic Errors: api/catastrophic.md
       - Comparative Assessment: api/comparison.md
+      - Calibration and Risk-Coverage: api/calibration.md
+      - Analysis and Reporting: api/reporting.md

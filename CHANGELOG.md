@@ -4,6 +4,49 @@ All notable changes to ImmunoMath are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] — Milestone 4: calibration and reporting
+
+### Added
+
+- **Top-label calibration** (`top_label_calibration`) and **event-level
+  calibration** (`event_calibration`) with a calibration table per bin
+  (count, mean predicted, observed rate, Wilson interval), **ECE** (weighted by
+  bin count) and **MCE**. Fixed-width (default) and equal-frequency binning,
+  10 bins by default; the method is recorded in every result. Event calibration
+  also reports the event Brier score and excludes subjects whose event
+  probability is not identifiable (residual mass), counting them.
+- **Risk-coverage analysis with abstention** (`risk_coverage`): user-defined
+  confidence score (callable, per-subject mapping, or the top probability by
+  default), explicit abstention, and **both accuracy and mean log loss** reported
+  against coverage. Tied scores are retained together, so the curve is
+  order-invariant.
+- **Analysis record** (`analyze_cohort`, `AnalysisResult`): one serializable,
+  schema-versioned record of the cohort, tail, calibration, event and
+  risk-coverage results with every parameter. The library never stamps the clock.
+- **`immunomath.reporting`** (optional extra `reporting`: Plotly + PyArrow):
+  lossless JSON export (non-finite floats are tagged, not nulled), CSV/Parquet
+  tables, Plotly reliability / risk-coverage / loss-distribution figures, and a
+  **self-contained HTML report** with metadata, denominators, exclusions, methods,
+  assumptions and generated warnings. Reports are rebuilt from the saved JSON
+  without re-running anything. All dynamic text is HTML-escaped.
+- **Documentation**: calibration and risk-coverage foundations pages, a reporting
+  user guide, a reproducibility checklist, Tutorial 6 (calibration diagram) and
+  Tutorial 7 (allele-presence probabilities), API pages, and a test that executes
+  every `>>>` example in the Markdown docs.
+
+### Fixed
+
+- `bootstrap_ci(method="bca")` imported SciPy, which is not a runtime
+  dependency, so BCa failed on a plain `pip install immunomath`. It now uses the
+  standard library (`statistics.NormalDist`); results are unchanged.
+- `getting-started.md` showed unrounded floats (`0.065`) that the code does not
+  actually print; the examples are now rounded and executed in CI.
+
+### Changed
+
+- Version is now defined in `immunomath/_version.py` (no circular import).
+- Version `0.4.0`.
+
 ## [0.3.0] — Milestone 3: comparative assessment
 
 ### Added
