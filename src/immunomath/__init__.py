@@ -22,6 +22,15 @@ quantiles, and catastrophic-error diagnostics).
 
 from __future__ import annotations
 
+from ._version import __version__
+from .analysis import AnalysisResult, analyze_cohort
+from .calibration import (
+    DEFAULT_N_BINS,
+    CalibrationBin,
+    CalibrationResult,
+    event_calibration,
+    top_label_calibration,
+)
 from .catastrophic import (
     DEFAULT_PROBABILITY_THRESHOLDS,
     CatastrophicReport,
@@ -41,6 +50,7 @@ from .diagnostics import (
 )
 from .distributions import RESIDUAL, Distribution, Projection, Residual
 from .quantiles import QuantileMethod, loss_quantile, loss_quantiles
+from .risk_coverage import RiskCoveragePoint, RiskCoverageResult, risk_coverage
 from .scoring import (
     CohortAccounting,
     CohortScore,
@@ -60,8 +70,20 @@ from .statistics import (
     paired_bootstrap_ci,
     trimmed_mean,
 )
-
-__version__ = "0.3.0"
+from .trs import trs_weights
+from .weighting import (
+    LossMetric,
+    ObservationLoss,
+    PairedWeightedComparison,
+    StratifiedComparison,
+    StratumComparison,
+    WeightedScore,
+    compare_methods_weighted,
+    per_observation_losses,
+    stratified_comparison,
+    validate_weights,
+    weighted_mean_loss,
+)
 
 __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability)
     "__version__",
@@ -84,9 +106,34 @@ __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability
     # Cohort container and summary
     "Cohort",
     "CohortSummary",
+    # Calibration, risk-coverage and analysis record
+    "top_label_calibration",
+    "event_calibration",
+    "CalibrationResult",
+    "CalibrationBin",
+    "DEFAULT_N_BINS",
+    "risk_coverage",
+    "RiskCoverageResult",
+    "RiskCoveragePoint",
+    "analyze_cohort",
+    "AnalysisResult",
     # Comparative assessment (paired)
     "compare_cohorts",
     "PairedComparison",
+    # Observation-weighted scoring & paired model comparison (TRS-aware)
+    "weighted_mean_loss",
+    "WeightedScore",
+    "per_observation_losses",
+    "ObservationLoss",
+    "validate_weights",
+    "LossMetric",
+    "compare_methods_weighted",
+    "PairedWeightedComparison",
+    "stratified_comparison",
+    "StratifiedComparison",
+    "StratumComparison",
+    # TRS -> weight adapter (optional, non-kernel)
+    "trs_weights",
     # Resampling & distributional statistics
     "bootstrap_ci",
     "paired_bootstrap_ci",

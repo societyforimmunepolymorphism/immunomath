@@ -13,9 +13,16 @@ ImmunoMath requires **Python 3.12+**.
 ```bash
 git clone https://github.com/<your-fork>/immunomath.git
 cd immunomath
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev,docs]"
+uv sync --extra dev --extra docs     # creates .venv from the committed uv.lock
 ```
+
+Run tools through uv (`uv run pytest`, `uv run ruff check .`) or activate
+`.venv`. If you prefer pip, create a virtual environment first
+(`python -m venv .venv && source .venv/bin/activate`) and run
+`pip install -e ".[dev,docs]"`.
+
+`uv.lock` is committed. If you change dependencies in `pyproject.toml`, run
+`uv lock` and commit the result; CI-style check: `uv lock --check`.
 
 ## The fork-and-pull-request workflow
 

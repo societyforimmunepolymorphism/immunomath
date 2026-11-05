@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "immunomath"
-version = "0.3.0"
+version = "0.4.1"
 description = "Metrognome: rigorous, reproducible evaluation of probabilistic genetic inference. Keeping probabilistic genetics honest."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -44,6 +44,10 @@ Documentation = "https://github.com/societyforimmunepolymorphism/immunomath"
 Issues = "https://github.com/societyforimmunepolymorphism/immunomath/issues"
 
 [project.optional-dependencies]
+reporting = [
+    "plotly>=5.20",
+    "pyarrow>=15",
+]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
@@ -52,6 +56,8 @@ dev = [
     "mypy>=1.11",
     "scikit-learn>=1.4",
     "scipy>=1.13",
+    "plotly>=5.20",
+    "pyarrow>=15",
 ]
 docs = [
     "mkdocs>=1.6",
@@ -90,6 +96,11 @@ ignore = [
 convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
+# Deliberate typographic characters (minus, en dash, infinity) in user-facing report text.
+"src/immunomath/reporting/report.py" = ["RUF001"]
+"tests/test_analysis_reporting.py" = ["RUF001"]
+# User-facing Streamlit UI strings use math symbols (λ, γ, Σ, −, ·) deliberately.
+"examples/streamlit_app.py" = ["RUF001"]
 "tests/*" = ["D100", "D101", "D102", "D103", "D104"]
 
 [tool.mypy]
@@ -104,7 +115,7 @@ files = ["src/immunomath"]
 # SciPy does not ship type stubs for scipy.stats (used only for the BCa
 # bootstrap's normal quantiles). Allow the untyped import without relaxing
 # strictness anywhere else in the package.
-module = ["scipy.*"]
+module = ["plotly.*", "pyarrow.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
