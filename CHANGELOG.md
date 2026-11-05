@@ -4,6 +4,50 @@ All notable changes to ImmunoMath are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] — TRS-aware weighted scoring
+
+### Added
+
+- **Observation-weighted proper scoring** (`weighted_mean_loss`,
+  `WeightedScore`): a covariate-weighted mean of the existing log or Brier
+  per-observation losses, $L_w = \sum_i w_i L_i / \sum_i w_i$, with the
+  unweighted mean always reported alongside. Weights are externally supplied and
+  validated (finite, strictly positive, correct length) but never normalized or
+  clipped. Reports sample count, total weight, and the Kish effective sample
+  size $N_\mathrm{eff} = (\sum w)^2 / \sum w^2$. Uniform (or `None`) weights
+  reproduce ordinary scoring exactly.
+- **Paired model comparison** (`compare_methods_weighted`,
+  `PairedWeightedComparison`): compares an incumbent and a candidate on
+  identical observations, truths and weights. Reports conventional and weighted
+  mean loss for each method, conventional and weighted mean improvement
+  ($\Delta_i = L_\mathrm{incumbent} - L_\mathrm{candidate}$; positive favors the
+  candidate), improved/worsened/unchanged counts, and the full distribution of
+  per-observation changes. Undefined-in-either and indeterminate $\infty-\infty$
+  observations are excluded and reported; one-sided infinities are retained.
+- **TRS-stratified validation** (`stratified_comparison`, `StratifiedComparison`,
+  `StratumComparison`): per-stratum mean log/Brier scores and paired improvement,
+  plus a **group-balanced macro-average** $L_\mathrm{balanced} = \frac1K \sum_k
+  \bar L_k$ over nonempty strata, reported alongside the conventional
+  donor-weighted cohort mean. Empty declared strata are listed and excluded from
+  the macro denominator.
+- **Shared loss front end** (`per_observation_losses`, `ObservationLoss`,
+  `LossMetric`, `validate_weights`): reuses `negative_log_score` and
+  `brier_score`, so residual/zero-probability semantics are defined in one place.
+- **Optional TRS → weight adapter** (`immunomath.trs.trs_weights`): the
+  domain-specific mapping $w_i = 1 + \lambda (1 - r_i)^\gamma$ for normalized
+  $r_i \in [0, 1]$, $\lambda \ge 0$, $\gamma > 0$, kept **outside** the
+  statistical kernel. Parameters are explicit (no scientific default); the TRS
+  scale is not silently normalized.
+- Documentation: a mathematical-foundations page (conditional propriety, the
+  weighting function, empty-strata and infinity handling) and an API page, plus
+  the worked example `examples/trs_weighted_comparison.py`.
+
+### Notes
+
+- Fully backward compatible: no existing public API, behavior, or serialization
+  changed. The core remains free of biological dependencies; no HLA parsing,
+  haplotype-frequency estimation, or donor-ranking logic was added.
+
 ## [0.4.0] — Milestone 4: calibration and reporting
 
 ### Added
