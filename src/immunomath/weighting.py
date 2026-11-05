@@ -421,9 +421,7 @@ def weighted_mean_loss(
         n_eff = 0.0
     else:
         weighted = _weighted_mean(scored_losses, scored_weights)
-        unweighted = (
-            math.inf if n_infinite > 0 else math.fsum(scored_losses) / n_scored
-        )
+        unweighted = math.inf if n_infinite > 0 else math.fsum(scored_losses) / n_scored
         total_weight = math.fsum(scored_weights)
         n_eff = _effective_sample_size(scored_weights)
 
@@ -519,9 +517,7 @@ class PairedWeightedComparison:
     tolerance: float
 
 
-def _paired_defined(
-    a: ObservationLoss, b: ObservationLoss
-) -> tuple[bool, str | None]:
+def _paired_defined(a: ObservationLoss, b: ObservationLoss) -> tuple[bool, str | None]:
     """Return ``(defined, reason)`` for a paired difference of two losses."""
     if not a.defined or not b.defined:
         which = []
@@ -896,9 +892,7 @@ def stratified_comparison(
         unknown = {s for s in strata if s not in declared}
         if unknown:
             bad = sorted(map(repr, unknown))
-            raise ValueError(
-                f"strata contains labels not present in stratum_order: {bad}."
-            )
+            raise ValueError(f"strata contains labels not present in stratum_order: {bad}.")
 
     # Group observation indices by stratum label.
     groups: dict[Hashable, list[int]] = {label: [] for label in order}
@@ -921,13 +915,22 @@ def stratified_comparison(
         g_cand = [candidate[i] for i in idx]
 
         log_cmp = compare_methods_weighted(
-            g_truths, g_inc, g_cand, metric=LossMetric.LOG,
-            label_incumbent=label_incumbent, label_candidate=label_candidate,
-            floor=floor, tolerance=tolerance,
+            g_truths,
+            g_inc,
+            g_cand,
+            metric=LossMetric.LOG,
+            label_incumbent=label_incumbent,
+            label_candidate=label_candidate,
+            floor=floor,
+            tolerance=tolerance,
         )
         brier_cmp = compare_methods_weighted(
-            g_truths, g_inc, g_cand, metric=LossMetric.BRIER,
-            label_incumbent=label_incumbent, label_candidate=label_candidate,
+            g_truths,
+            g_inc,
+            g_cand,
+            metric=LossMetric.BRIER,
+            label_incumbent=label_incumbent,
+            label_candidate=label_candidate,
             tolerance=tolerance,
         )
 
@@ -953,9 +956,14 @@ def stratified_comparison(
 
     # Conventional cohort-wide (observation-weighted) log comparison.
     overall = compare_methods_weighted(
-        list(truths), list(incumbent), list(candidate), metric=LossMetric.LOG,
-        label_incumbent=label_incumbent, label_candidate=label_candidate,
-        floor=floor, tolerance=tolerance,
+        list(truths),
+        list(incumbent),
+        list(candidate),
+        metric=LossMetric.LOG,
+        label_incumbent=label_incumbent,
+        label_candidate=label_candidate,
+        floor=floor,
+        tolerance=tolerance,
     )
 
     return StratifiedComparison(
