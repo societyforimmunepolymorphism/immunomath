@@ -70,6 +70,20 @@ from .statistics import (
     paired_bootstrap_ci,
     trimmed_mean,
 )
+from .trs import trs_weights
+from .weighting import (
+    LossMetric,
+    ObservationLoss,
+    PairedWeightedComparison,
+    StratifiedComparison,
+    StratumComparison,
+    WeightedScore,
+    compare_methods_weighted,
+    per_observation_losses,
+    stratified_comparison,
+    validate_weights,
+    weighted_mean_loss,
+)
 
 __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability)
     "__version__",
@@ -106,6 +120,20 @@ __all__ = [  # noqa: RUF022  (grouped by role, not alphabetical, for readability
     # Comparative assessment (paired)
     "compare_cohorts",
     "PairedComparison",
+    # Observation-weighted scoring & paired model comparison (TRS-aware)
+    "weighted_mean_loss",
+    "WeightedScore",
+    "per_observation_losses",
+    "ObservationLoss",
+    "validate_weights",
+    "LossMetric",
+    "compare_methods_weighted",
+    "PairedWeightedComparison",
+    "stratified_comparison",
+    "StratifiedComparison",
+    "StratumComparison",
+    # TRS -> weight adapter (optional, non-kernel)
+    "trs_weights",
     # Resampling & distributional statistics
     "bootstrap_ci",
     "paired_bootstrap_ci",
