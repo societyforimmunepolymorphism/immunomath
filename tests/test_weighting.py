@@ -227,9 +227,7 @@ def test_permutation_invariance() -> None:
         [weights[i] for i in perm],
     )
     assert cmp_base.mean_improvement == pytest.approx(cmp_perm.mean_improvement)
-    assert cmp_base.weighted_mean_improvement == pytest.approx(
-        cmp_perm.weighted_mean_improvement
-    )
+    assert cmp_base.weighted_mean_improvement == pytest.approx(cmp_perm.weighted_mean_improvement)
     assert cmp_base.n_improved == cmp_perm.n_improved
     assert cmp_base.n_worsened == cmp_perm.n_worsened
 
@@ -296,9 +294,7 @@ class TestMacroAverage:
         ]
         cand = inc  # identical: improvement is zero everywhere
         strata = ["high", "high", "high", "low"]
-        result = stratified_comparison(
-            truths, inc, cand, strata, stratum_order=["low", "high"]
-        )
+        result = stratified_comparison(truths, inc, cand, strata, stratum_order=["low", "high"])
         # Per-stratum means computed by hand.
         high_mean = -math.log(0.99)
         low_mean = -math.log(0.5)
@@ -324,7 +320,10 @@ class TestMacroAverage:
     def test_unknown_stratum_label_rejected(self) -> None:
         with pytest.raises(ValueError, match="not present in stratum_order"):
             stratified_comparison(
-                ["G1"], [_dist({"G1": 1.0})], [_dist({"G1": 1.0})], ["mystery"],
+                ["G1"],
+                [_dist({"G1": 1.0})],
+                [_dist({"G1": 1.0})],
+                ["mystery"],
                 stratum_order=["low", "high"],
             )
 
@@ -338,9 +337,7 @@ class TestMacroAverage:
         inc = [_dist({"G1": 0.90, "G2": 0.10})] * 20 + [_dist({"G1": 0.60, "G2": 0.40})]
         cand = [_dist({"G1": 0.95, "G2": 0.05})] * 20 + [_dist({"G1": 0.30, "G2": 0.70})]
         strata = ["high"] * 20 + ["low"]
-        result = stratified_comparison(
-            truths, inc, cand, strata, stratum_order=["low", "high"]
-        )
+        result = stratified_comparison(truths, inc, cand, strata, stratum_order=["low", "high"])
         low = next(s for s in result.strata if s.label == "low")
         high = next(s for s in result.strata if s.label == "high")
         assert high.mean_improvement_log > 0  # candidate better in high

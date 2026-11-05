@@ -62,9 +62,7 @@ class Case:
     outcomes: tuple[str, ...]
 
 
-def _make_distribution(
-    probs: np.ndarray, outcomes: tuple[str, ...]
-) -> im.Distribution:
+def _make_distribution(probs: np.ndarray, outcomes: tuple[str, ...]) -> im.Distribution:
     """Build a validated :class:`im.Distribution` from a probability vector.
 
     The sampled vector is rounded and its largest entry absorbs the rounding
@@ -119,9 +117,7 @@ _OTHER_COLOR = "#8c9bb5"  # muted: the other candidates
 def input_bar_chart(case: Case) -> go.Figure:
     """Return a bar chart of one prediction with the truth highlighted."""
     probs = [case.distribution.probability(g) for g in case.outcomes]
-    colors = [
-        _TRUTH_COLOR if g == case.truth else _OTHER_COLOR for g in case.outcomes
-    ]
+    colors = [_TRUTH_COLOR if g == case.truth else _OTHER_COLOR for g in case.outcomes]
     fig = go.Figure(
         go.Bar(
             x=list(case.outcomes),
@@ -173,9 +169,7 @@ def trs_covariates(cases: list[Case]) -> list[float]:
     return [trs_score(case.distribution) for case in cases]
 
 
-def per_case_rows(
-    cases: list[Case], weights: list[float] | None = None
-) -> list[dict[str, object]]:
+def per_case_rows(cases: list[Case], weights: list[float] | None = None) -> list[dict[str, object]]:
     """Score each case with ImmunoMath and return display-ready rows."""
     rows: list[dict[str, object]] = []
     for i, case in enumerate(cases):
@@ -252,9 +246,7 @@ def main() -> None:
 
     # --- Outputs first, full width -------------------------------------- #
     cohort = build_cohort(cases)
-    result = im.analyze_cohort(
-        cohort, label="streamlit explorer", seed=int(seed), n_resamples=500
-    )
+    result = im.analyze_cohort(cohort, label="streamlit explorer", seed=int(seed), n_resamples=500)
     record = result.to_dict()
     denom = record["denominators"]
     summ = record["summary"]

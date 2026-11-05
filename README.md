@@ -76,23 +76,25 @@ from immunomath.trs import trs_weights  # optional, non-kernel adapter
 
 truths = ["G1", "G1", "G1"]
 incumbent = [im.Distribution({"G1": 0.90, "G2": 0.10})] * 2 + [
-    im.Distribution({"G1": 0.60, "G2": 0.40})]
+    im.Distribution({"G1": 0.60, "G2": 0.40})
+]
 candidate = [im.Distribution({"G1": 0.95, "G2": 0.05})] * 2 + [
-    im.Distribution({"G1": 0.30, "G2": 0.70})]  # worse for the low-TRS donor
+    im.Distribution({"G1": 0.30, "G2": 0.70})
+]  # worse for the low-TRS donor
 
-trs = [0.95, 0.95, 0.10]                        # normalized, higher = better resolved
+trs = [0.95, 0.95, 0.10]  # normalized, higher = better resolved
 weights = trs_weights(trs, lam=4.0, gamma=2.0)  # w = 1 + λ(1 − r)^γ (explicit params)
 
 cmp = im.compare_methods_weighted(truths, incumbent, candidate, weights)
-cmp.mean_improvement            # conventional: Δ = L_incumbent − L_candidate (>0 favors candidate)
-cmp.weighted_mean_improvement   # TRS-weighted improvement
-cmp.effective_sample_size       # Kish N_eff = (Σw)² / Σw²
+cmp.mean_improvement  # conventional: Δ = L_incumbent − L_candidate (>0 favors candidate)
+cmp.weighted_mean_improvement  # TRS-weighted improvement
+cmp.effective_sample_size  # Kish N_eff = (Σw)² / Σw²
 
 strat = im.stratified_comparison(
-    truths, incumbent, candidate, strata=["high", "high", "low"],
-    stratum_order=["low", "high"])
-strat.overall_mean_improvement_log   # donor-weighted (conventional) improvement
-strat.macro_mean_improvement_log     # group-balanced: (1/K) Σ_k mean_k over nonempty strata
+    truths, incumbent, candidate, strata=["high", "high", "low"], stratum_order=["low", "high"]
+)
+strat.overall_mean_improvement_log  # donor-weighted (conventional) improvement
+strat.macro_mean_improvement_log  # group-balanced: (1/K) Σ_k mean_k over nonempty strata
 ```
 
 **Statistical guarantee.** Weights must be fixed functions of pre-registered

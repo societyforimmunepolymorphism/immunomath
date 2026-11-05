@@ -110,31 +110,48 @@ def main() -> None:
 
     # --- 1 & 2: conventional vs TRS-weighted log score (paired) ----------- #
     log_cmp = im.compare_methods_weighted(
-        truths, incumbent, candidate, weights,
-        metric="log", label_incumbent="incumbent", label_candidate="candidate",
+        truths,
+        incumbent,
+        candidate,
+        weights,
+        metric="log",
+        label_incumbent="incumbent",
+        label_candidate="candidate",
     )
     print("Log score (lower is better), paired incumbent vs candidate")
-    print(f"  conventional mean:  incumbent={log_cmp.mean_loss_incumbent:.4f}  "
-          f"candidate={log_cmp.mean_loss_candidate:.4f}")
-    print(f"  TRS-weighted mean:  incumbent={log_cmp.weighted_mean_loss_incumbent:.4f}  "
-          f"candidate={log_cmp.weighted_mean_loss_candidate:.4f}")
+    print(
+        f"  conventional mean:  incumbent={log_cmp.mean_loss_incumbent:.4f}  "
+        f"candidate={log_cmp.mean_loss_candidate:.4f}"
+    )
+    print(
+        f"  TRS-weighted mean:  incumbent={log_cmp.weighted_mean_loss_incumbent:.4f}  "
+        f"candidate={log_cmp.weighted_mean_loss_candidate:.4f}"
+    )
     print(f"  conventional improvement (inc - cand): {log_cmp.mean_improvement:+.4f}")
     print(f"  TRS-weighted improvement:              {log_cmp.weighted_mean_improvement:+.4f}")
-    print(f"  improved={log_cmp.n_improved}  worsened={log_cmp.n_worsened}  "
-          f"unchanged={log_cmp.n_unchanged}  N_eff={log_cmp.effective_sample_size:.1f}")
+    print(
+        f"  improved={log_cmp.n_improved}  worsened={log_cmp.n_worsened}  "
+        f"unchanged={log_cmp.n_unchanged}  N_eff={log_cmp.effective_sample_size:.1f}"
+    )
     _verdict("  conventional verdict:", log_cmp.mean_improvement)
     _verdict("  TRS-weighted verdict:", log_cmp.weighted_mean_improvement)
 
     # --- 3 & 4: TRS-balanced macro score and per-stratum differences ------ #
     strat = im.stratified_comparison(
-        truths, incumbent, candidate, strata, stratum_order=["low", "high"],
+        truths,
+        incumbent,
+        candidate,
+        strata,
+        stratum_order=["low", "high"],
     )
     print("\nTRS-stratified log score")
     for s in strat.strata:
-        print(f"  [{s.label:>4}] n={s.n:>3}  "
-              f"inc={s.mean_log_incumbent:.4f}  cand={s.mean_log_candidate:.4f}  "
-              f"improvement={s.mean_improvement_log:+.4f}  "
-              f"(improved={s.n_improved}, worsened={s.n_worsened})")
+        print(
+            f"  [{s.label:>4}] n={s.n:>3}  "
+            f"inc={s.mean_log_incumbent:.4f}  cand={s.mean_log_candidate:.4f}  "
+            f"improvement={s.mean_improvement_log:+.4f}  "
+            f"(improved={s.n_improved}, worsened={s.n_worsened})"
+        )
     if strat.empty_strata:
         print(f"  empty strata (excluded from macro-average): {list(strat.empty_strata)}")
     print(f"  overall (donor-weighted) improvement: {strat.overall_mean_improvement_log:+.4f}")
@@ -144,7 +161,11 @@ def main() -> None:
 
     # --- Brier metric, same cohort ---------------------------------------- #
     brier_cmp = im.compare_methods_weighted(
-        truths, incumbent, candidate, weights, metric="brier",
+        truths,
+        incumbent,
+        candidate,
+        weights,
+        metric="brier",
     )
     print("\nBrier score (sum form, lower is better)")
     print(f"  conventional improvement: {brier_cmp.mean_improvement:+.4f}")
